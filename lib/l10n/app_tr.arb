@@ -1,0 +1,219 @@
+{
+  "@@locale": "tr",
+
+  "appTitle": "Sticcker",
+
+  "newPack": "Yeni Paket",
+  "importFromTelegram": "Telegram'dan Aktar",
+  "emptyPacksTitle": "Henüz sticker paketin yok",
+  "emptyPacksSubtitle": "Yeni bir paket oluşturarak başlayabilirsin",
+  "errorGeneric": "Hata: {error}",
+  "@errorGeneric": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+
+  "newStickerPack": "Yeni Sticker Paketi",
+  "packName": "Paket Adı",
+  "packNameHint": "örnek: Komik Kediler",
+  "author": "Yazar",
+  "authorHint": "Senin ismin",
+  "cancel": "İptal",
+  "create": "Oluştur",
+
+  "telegramBotTokenRequired": "Öncelikle Ayarlar'dan Telegram bot token girin",
+  "telegramImportTitle": "Telegram'dan Aktar",
+  "telegramImportInfo": "Sticker setinin adını girin (örn: Animals veya Animals_by_BotName)",
+  "setName": "Set Adı",
+  "import_": "Aktar",
+
+  "importingFromTelegram": "Telegram'dan Aktarılıyor",
+  "starting": "Başlanıyor...",
+  "downloadingStickerSet": "Sticker seti indiriliyor...",
+  "downloadingProgress": "İndiriliyor: {current}/{total}",
+  "@downloadingProgress": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "stickerSetEmptyOrFailed": "Sticker seti boş veya indirilemedi",
+  "creatingPack": "Paket oluşturuluyor...",
+  "importedSuccess": "\"{title}\" aktarıldı ({count} sticker)",
+  "@importedSuccess": {
+    "placeholders": {
+      "title": { "type": "String" },
+      "count": { "type": "int" }
+    }
+  },
+  "close": "Kapat",
+
+  "stickerCountInfo": "{count} sticker",
+  "@stickerCountInfo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "stickerCountWithAuthor": "{count} sticker · {author}",
+  "@stickerCountWithAuthor": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "author": { "type": "String" }
+    }
+  },
+
+  "pack": "Paket",
+  "error": "Hata",
+  "exportToWhatsApp": "WhatsApp'a Aktar",
+  "exportToTelegram": "Telegram'a Aktar",
+  "deletePack": "Paketi Sil",
+  "addSticker": "Sticker ekle",
+  "addStickerSubtitle": "Galeri, dosya veya kamera ile ekleyebilirsin",
+  "processingProgress": "İşleniyor... {percent}%",
+  "@processingProgress": {
+    "placeholders": {
+      "percent": { "type": "int" }
+    }
+  },
+  "deleteSticker": "Sticker Sil",
+  "deleteStickerConfirm": "Bu sticker silinsin mi?",
+  "delete": "Sil",
+
+  "editPack": "Paketi Düzenle",
+  "save": "Kaydet",
+  "deletePackConfirm": "Bu paket ve tüm stickerları silinecek. Emin misin?",
+
+  "editSticker": "Sticker Düzenle",
+  "crop": "Kırp",
+  "rotate": "Döndür",
+  "text": "Metin",
+  "draw": "Çiz",
+  "videoDuration": "Video Süresi: {start} - {end}",
+  "@videoDuration": {
+    "placeholders": {
+      "start": { "type": "String" },
+      "end": { "type": "String" }
+    }
+  },
+  "maxDurationTelegram": "Maks. {seconds} saniye (Telegram)",
+  "@maxDurationTelegram": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "emoji": "Emoji: ",
+  "cropSticker": "Sticker Kırp",
+  "addText": "Metin Ekle",
+  "textHint": "Metnini yaz...",
+  "add": "Ekle",
+  "textAdded": "Metin eklendi",
+  "drawingToolComingSoon": "Çizim aracı yakında eklenecek",
+  "stickerSaved": "Sticker kaydedildi",
+
+  "settings": "Ayarlar",
+  "appearance": "Görünüm",
+  "telegramIntegration": "Telegram Entegrasyonu",
+  "cache": "Önbellek",
+  "about": "Hakkında",
+  "darkTheme": "Karanlık Tema",
+  "darkThemeSubtitle": "Uygulamayı karanlık modda kullan",
+  "botToken": "Bot Token",
+  "botTokenHelper": "@BotFather ile bot oluştur ve token al",
+  "botConnected": "Bot bağlandı: @{username}",
+  "@botConnected": {
+    "placeholders": {
+      "username": { "type": "String" }
+    }
+  },
+  "cacheSize": "Önbellek Boyutu",
+  "cacheSizeUsing": "{size} MB kullanılıyor",
+  "@cacheSizeUsing": {
+    "placeholders": {
+      "size": { "type": "int" }
+    }
+  },
+  "clear": "Temizle",
+  "clearCache": "Önbellek Temizle",
+  "clearCacheConfirm": "Tüm işlenmiş stickerlar silinecek. Emin misin?",
+  "cacheCleared": "Önbellek temizlendi",
+  "openSourceLicenses": "Açık Kaynak Lisanslar",
+
+  "stickerSetName": "Sticker Set Adı",
+  "stickerSetNameHelper": "Sadece harf, rakam ve alt çizgi",
+  "telegramUserId": "Telegram User ID",
+  "telegramUserIdHelper": "@userinfobot ile öğrenebilirsin",
+  "sendToWhatsApp": "WhatsApp'a Gönder",
+  "sendToTelegram": "Telegram'a Gönder",
+  "preparingStickers": "Stickerlar hazırlanıyor...",
+  "convertingProgress": "Dönüştürülüyor: {current}/{total}",
+  "@convertingProgress": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "sendingToTelegram": "Telegram'a gönderiliyor...",
+  "packNotFound": "Paket bulunamadı",
+  "setNameAndUserIdRequired": "Set adı ve User ID gerekli",
+  "invalidUserId": "Geçersiz User ID",
+  "telegramBotTokenNotConfigured": "Telegram bot token ayarlarından yapılandırılmalı",
+  "sentToWhatsApp": "WhatsApp'a gönderildi!",
+  "sentToTelegram": "Telegram'a gönderildi!",
+
+  "ok": "Tamam",
+  "copy": "Kopyala",
+  "copiedToClipboard": "Panoya kopyalandı",
+
+  "language": "Dil",
+  "languageSubtitle": "Uygulama dilini değiştir",
+  "systemDefault": "Sistem Varsayılanı",
+  "turkish": "Türkçe",
+  "english": "English",
+  "russian": "Русский",
+  "korean": "한국어",
+  "spanish": "Español",
+  "japanese": "日本語",
+
+  "gridColumns": "Sütun Sayısı",
+  "gridColumnsSubtitle": "Sticker ızgarasındaki sütun sayısı",
+  "stickerLimitExceeded": "Paket limiti aşılıyor. En fazla {max} sticker eklenebilir, {skipped} tanesi atlandı.",
+  "@stickerLimitExceeded": {
+    "placeholders": {
+      "max": { "type": "int" },
+      "skipped": { "type": "int" }
+    }
+  },
+  "someStickersNotProcessed": "{count} sticker işlenemedi",
+  "@someStickersNotProcessed": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "failedFiles": "Başarısız Dosyalar",
+  "failedFileReason": "{fileName}: {reason}",
+  "@failedFileReason": {
+    "placeholders": {
+      "fileName": { "type": "String" },
+      "reason": { "type": "String" }
+    }
+  },
+
+  "convertingDetail": "Dönüştürülüyor: {current}/{total} — {fileName}",
+  "@convertingDetail": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" },
+      "fileName": { "type": "String" }
+    }
+  },
+  "convertedSize": "Dönüştürüldü: {size} KB",
+  "@convertedSize": {
+    "placeholders": {
+      "size": { "type": "int" }
+    }
+  },
+  "creatingTrayIcon": "Tray ikonu oluşturuluyor...",
+  "sendingToWhatsApp": "WhatsApp'a gönderiliyor...",
+  "errorDetails": "Hata Detayı"
+}
