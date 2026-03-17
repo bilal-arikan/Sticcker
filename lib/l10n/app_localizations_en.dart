@@ -194,6 +194,9 @@ class SEn extends S {
   String get textAdded => 'Text added';
 
   @override
+  String get eraser => 'Eraser';
+
+  @override
   String get drawingToolComingSoon => 'Drawing tool coming soon';
 
   @override

@@ -15,11 +15,12 @@ A sticker pack creator for **WhatsApp** and **Telegram**, built with Flutter.
 - Export sticker packs directly to WhatsApp (Android)
 - Export sticker packs to Telegram via Bot API
 - Import existing sticker sets from Telegram
-- Built-in sticker editor (crop, rotate, text overlay)
+- Built-in sticker editor (crop, rotate, text overlay, trim)
+- Paint-to-transparent eraser tool (works on animated stickers too)
 - Support for both static and animated stickers
 - Automatic format conversion and size optimization
 - Dark mode support
-- Localized in English and Turkish
+- Localized in 6 languages (EN, TR, ES, JA, KO, RU)
 
 ## Tech Stack
 

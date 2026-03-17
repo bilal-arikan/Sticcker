@@ -191,6 +191,9 @@ class SKo extends S {
   String get textAdded => '텍스트 추가됨';
 
   @override
+  String get eraser => '지우개';
+
+  @override
   String get drawingToolComingSoon => '그리기 도구가 곧 추가됩니다';
 
   @override

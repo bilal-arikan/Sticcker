@@ -8,6 +8,7 @@ import '../../core/constants/sticker_constants.dart';
 import '../../core/providers.dart';
 import '../../data/models/sticker.dart';
 import '../../core/utils/error_dialog.dart';
+import 'erase_screen.dart';
 
 class StickerEditorScreen extends ConsumerStatefulWidget {
   final int stickerId;
@@ -34,6 +35,8 @@ class _StickerEditorScreenState extends ConsumerState<StickerEditorScreen> {
   double? _cropX, _cropY, _cropW, _cropH;
   // Rotation count: 0=none, 1=90°, 2=180°, 3=270°
   int _rotationCount = 0;
+  // Erase mask path (grayscale PNG: white=keep, black=erase)
+  String? _eraseMaskPath;
 
   /// Check if source could be animated (video/gif OR animated WebP/GIF file)
   bool get _isAnimatedMedia {
@@ -197,6 +200,11 @@ class _StickerEditorScreenState extends ConsumerState<StickerEditorScreen> {
                   icon: Icons.rotate_right,
                   label: l.rotate,
                   onTap: () => _rotateImage(),
+                ),
+                _ToolButton(
+                  icon: Icons.auto_fix_high,
+                  label: l.eraser,
+                  onTap: () => _eraseBackground(),
                 ),
               ],
             ),
@@ -382,6 +390,66 @@ class _StickerEditorScreenState extends ConsumerState<StickerEditorScreen> {
     }
   }
 
+  Future<void> _eraseBackground() async {
+    if (_sticker == null || _isProcessing) return;
+
+    setState(() => _isProcessing = true);
+    try {
+      // Determine the image to erase from
+      String? imagePath;
+
+      if (_isAnimatedMedia) {
+        // For animated: extract first frame to erase on
+        final source = _animatedSourcePath ?? await _getOriginalSource();
+        if (source == null) return;
+        final processor = await ref.read(mediaProcessorProvider.future);
+        try {
+          imagePath = await processor.extractFirstFrame(source);
+        } catch (e) {
+          debugPrint('[Editor] extractFirstFrame for erase failed: $e');
+          if (_previewPath != null && await File(_previewPath!).exists()) {
+            imagePath = _previewPath;
+          }
+        }
+      } else {
+        // Static: use preview or source
+        if (_previewPath != null && await File(_previewPath!).exists()) {
+          imagePath = _previewPath;
+        } else if (await File(_sticker!.sourcePath).exists()) {
+          imagePath = _sticker!.sourcePath;
+        } else if (_sticker!.processedPath != null && await File(_sticker!.processedPath!).exists()) {
+          imagePath = _sticker!.processedPath;
+        }
+      }
+
+      if (imagePath == null || !await File(imagePath).exists()) {
+        debugPrint('[Editor] No valid file found for erase');
+        return;
+      }
+
+      if (!mounted) return;
+      setState(() => _isProcessing = false);
+
+      // Navigate to erase screen
+      final result = await Navigator.push<EraseResult>(
+        context,
+        MaterialPageRoute(builder: (_) => EraseScreen(imagePath: imagePath!)),
+      );
+
+      if (result != null && mounted) {
+        setState(() {
+          _previewPath = result.previewPath;
+          _eraseMaskPath = result.maskPath;
+        });
+        debugPrint('[Editor] Erase result: preview=${result.previewPath}, mask=${result.maskPath}');
+      }
+    } catch (e, st) {
+      if (mounted) showErrorDialog(context, e, st);
+    } finally {
+      if (mounted) setState(() => _isProcessing = false);
+    }
+  }
+
   Future<void> _saveAndProcess() async {
     if (_sticker == null || _isProcessing) return;
     final l = S.of(context)!;
@@ -400,26 +468,36 @@ class _StickerEditorScreenState extends ConsumerState<StickerEditorScreen> {
 
         final hasCrop = _cropX != null;
         final hasRotation = _rotationCount > 0;
-        final hasEdits = hasCrop || hasRotation;
+        final hasEraseMask = _eraseMaskPath != null;
+        final hasEdits = hasCrop || hasRotation || hasEraseMask;
 
-        // If no edits and already processed, keep existing processedPath
-        if (!hasEdits && _sticker!.processedPath != null &&
+        if (hasEraseMask) {
+          // Erase mask: apply mask to ALL frames using FFmpeg
+          final source = await _getOriginalSource();
+          if (source == null) throw Exception('Source file not found');
+
+          debugPrint('[Editor] Save: applying erase mask to animated source=$source, mask=$_eraseMaskPath, rotation=${_rotationCount * 90}°');
+
+          processedPath = await processor.applyEraseMask(
+            source,
+            _eraseMaskPath!,
+            trimStartMs: _sticker!.isAnimated ? _trimStart.toInt() : null,
+            trimEndMs: _sticker!.isAnimated ? _trimEnd.toInt() : null,
+            rotationCount: _rotationCount,
+          );
+        } else if (!hasEdits && _sticker!.processedPath != null &&
             await File(_sticker!.processedPath!).exists() &&
             await File(_sticker!.processedPath!).length() > 0) {
           debugPrint('[Editor] No edits, keeping existing processedPath');
           processedPath = _sticker!.processedPath!;
         } else if (hasRotation && !hasCrop && _animatedSourcePath != null &&
             await File(_animatedSourcePath!).exists()) {
-          // Rotation only (no crop): use the already-rotated animated file directly
-          // FFmpeg cannot read animated WebP as input, so skip processToAnimatedWebp
           debugPrint('[Editor] Save: using rotated animated file directly (no FFmpeg): $_animatedSourcePath');
           processedPath = _animatedSourcePath!;
         } else {
           // Use ORIGINAL source + rotation/crop filters in single pass
           final source = await _getOriginalSource();
-          if (source == null) {
-            throw Exception('Source file not found');
-          }
+          if (source == null) throw Exception('Source file not found');
 
           debugPrint('[Editor] Save: source=$source, rotation=${_rotationCount * 90}°, crop=($_cropX,$_cropY,$_cropW,$_cropH)');
 
@@ -435,7 +513,7 @@ class _StickerEditorScreenState extends ConsumerState<StickerEditorScreen> {
           );
         }
       } else {
-        // Use edited preview (cropped/rotated) as source, then process to 512x512 webp
+        // Static image: use edited preview as source, process to 512x512 webp
         String source;
         if (_previewPath != null && await File(_previewPath!).exists()) {
           source = _previewPath!;

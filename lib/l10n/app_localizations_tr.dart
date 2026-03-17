@@ -194,6 +194,9 @@ class STr extends S {
   String get textAdded => 'Metin eklendi';
 
   @override
+  String get eraser => 'Silgi';
+
+  @override
   String get drawingToolComingSoon => 'Çizim aracı yakında eklenecek';
 
   @override

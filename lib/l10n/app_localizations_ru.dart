@@ -194,6 +194,9 @@ class SRu extends S {
   String get textAdded => 'Текст добавлен';
 
   @override
+  String get eraser => 'Ластик';
+
+  @override
   String get drawingToolComingSoon => 'Инструмент рисования скоро будет';
 
   @override

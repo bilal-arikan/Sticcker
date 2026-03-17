@@ -442,6 +442,86 @@ class MediaProcessor {
     throw Exception('Failed to extract first frame from: ${sourcePath.split('/').last}\nFFmpeg: $logs2');
   }
 
+  /// Apply an erase mask to all frames of an animated media file.
+  /// The mask is an RGBA PNG: white+opaque=keep, transparent=erase.
+  /// Uses blend=all_mode=multiply to zero out erased pixels on every frame.
+  Future<String> applyEraseMask(
+    String sourcePath,
+    String maskPath, {
+    int targetSize = 512,
+    int? trimStartMs,
+    int? trimEndMs,
+    int rotationCount = 0,
+  }) async {
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final outputPath = await _cache.getCachePath(sourcePath, params: {'eraseMask': timestamp});
+
+    debugPrint('[MediaProcessor] applyEraseMask: source=$sourcePath, mask=$maskPath');
+
+    final startSec = (trimStartMs ?? 0) / 1000.0;
+    final durationArg = trimEndMs != null
+        ? '-t ${((trimEndMs - (trimStartMs ?? 0)) / 1000.0).clamp(0.1, 7.0)}'
+        : '-t 7';
+    final seekArg = startSec > 0 ? '-ss $startSec ' : '';
+
+    // Build rotation filters for source
+    final rotFilters = <String>[];
+    if (rotationCount == 1) {
+      rotFilters.add('transpose=1');
+    } else if (rotationCount == 2) {
+      rotFilters.add('transpose=1,transpose=1');
+    } else if (rotationCount == 3) {
+      rotFilters.add('transpose=2');
+    }
+    final rotPre = rotFilters.isNotEmpty ? ',${rotFilters.join(',')}' : '';
+
+    // Strategy: use -loop 1 on mask input to repeat it for every frame.
+    // blend=all_mode=multiply multiplies each channel (RGBA) of source with mask.
+    // Mask: white+opaque (255,255,255,255) = keep, transparent (0,0,0,0) = erase.
+    // Result: kept pixels stay, erased pixels become fully transparent.
+    // -shortest ensures output ends when the animated source ends.
+    final filterComplex =
+        '[0:v]format=rgba$rotPre[src];'
+        '[1:v]format=rgba[mask];'
+        '[src][mask]blend=all_mode=multiply,'
+        'scale=$targetSize:$targetSize:force_original_aspect_ratio=decrease,'
+        'pad=$targetSize:$targetSize:(ow-iw)/2:(oh-ih)/2:color=0x00000000[out]';
+
+    final strategies = [
+      // Strategy 1: libwebp_anim with -loop 1 on mask
+      '${seekArg}-i "$sourcePath" -loop 1 -i "$maskPath" $durationArg '
+      '-filter_complex "$filterComplex" -map "[out]" -shortest '
+      '-vcodec libwebp_anim -lossless 0 -compression_level 3 -quality 70 -loop 0 '
+      '-an -y "$outputPath"',
+      // Strategy 2: libwebp fallback
+      '${seekArg}-i "$sourcePath" -loop 1 -i "$maskPath" $durationArg '
+      '-filter_complex "$filterComplex" -map "[out]" -shortest '
+      '-vcodec libwebp -lossless 0 -compression_level 3 -quality 70 -loop 0 -preset photo '
+      '-an -y "$outputPath"',
+    ];
+
+    String? lastLogs;
+    for (int i = 0; i < strategies.length; i++) {
+      debugPrint('[MediaProcessor] applyEraseMask strategy ${i + 1}');
+      final session = await FFmpegKit.execute(strategies[i]);
+      final returnCode = await session.getReturnCode();
+
+      if (ReturnCode.isSuccess(returnCode)) {
+        final outFile = File(outputPath);
+        if (await outFile.exists() && await outFile.length() > 0) {
+          debugPrint('[MediaProcessor] applyEraseMask strategy ${i + 1} OK: ${await outFile.length()} bytes');
+          return outputPath;
+        }
+      }
+
+      lastLogs = await session.getLogsAsString();
+      debugPrint('[MediaProcessor] applyEraseMask strategy ${i + 1} failed');
+    }
+
+    debugPrint('[MediaProcessor] applyEraseMask all strategies failed. Last logs: $lastLogs');
+    throw Exception('Failed to apply erase mask.\nFFmpeg: ${lastLogs?.substring(0, (lastLogs.length).clamp(0, 500))}');
+  }
+
   /// Generate thumbnail for a sticker
   Future<String> generateThumbnail(String sourcePath, {int size = 128}) async {
     final thumbnailPath = await _cache.getThumbnailPath(sourcePath);

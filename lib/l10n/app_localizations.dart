@@ -435,6 +435,12 @@ abstract class S {
   /// **'Metin eklendi'**
   String get textAdded;
 
+  /// No description provided for @eraser.
+  ///
+  /// In tr, this message translates to:
+  /// **'Silgi'**
+  String get eraser;
+
   /// No description provided for @drawingToolComingSoon.
   ///
   /// In tr, this message translates to:

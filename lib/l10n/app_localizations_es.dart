@@ -194,6 +194,9 @@ class SEs extends S {
   String get textAdded => 'Texto agregado';
 
   @override
+  String get eraser => 'Borrador';
+
+  @override
   String get drawingToolComingSoon => 'Herramienta de dibujo próximamente';
 
   @override

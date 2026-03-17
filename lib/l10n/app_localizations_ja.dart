@@ -191,6 +191,9 @@ class SJa extends S {
   String get textAdded => 'テキストを追加しました';
 
   @override
+  String get eraser => '消しゴム';
+
+  @override
   String get drawingToolComingSoon => '描画ツールは近日公開予定';
 
   @override
